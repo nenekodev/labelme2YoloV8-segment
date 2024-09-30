@@ -37,12 +37,16 @@ def json_to_yolo(json_path: Path, sorted_keys: list):
         label = shape["label"]
         points = shape["points"]
         class_idx = sorted_keys.index(label)
-        txt_string = f"{class_idx} "
 
-        for x, y in points:
-            x /= width
-            y /= height
-            txt_string += f"{x} {y} "
+        x_1, y_1 = points[0]
+        x_2, y_2 = points[1]
+        
+        box_width = abs(x_2 - x_1) / width
+        box_height = abs(y_2 - y_1) / height
+        x_center = (min(x_1, x_2) + (box_width / 2)) / width
+        y_center = (min(y_1, y_2) + (box_height / 2)) / height
+
+        txt_string = f"{class_idx} {x_center} {y_center} {box_width} {box_height} "
 
         yolo_lines.append(txt_string.strip() + "\n")
 
